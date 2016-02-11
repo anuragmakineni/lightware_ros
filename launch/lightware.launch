@@ -1,0 +1,7 @@
+<launch>
+  <node name="lightware" pkg="ros_lightware" type="ros_lightware.py" respawn="false" output="screen">
+    <param name="rate" type="double" value="30"/>
+    <param name="port" type="string" value="/dev/ttyUSB0"/>
+    <param name="baudrate" type="int" value="115200"/>
+  </node>
+</launch>
