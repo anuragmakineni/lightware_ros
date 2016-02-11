@@ -8,10 +8,10 @@ def ros_lightware():
     rospy.init_node('ros_lightware')
 
     # ROS parameters
-    hz = rospy.get_param('rate', 30)
-    port = rospy.get_param('port', '/dev/ttyUSB0')
-    t_out = rospy.get_param('timeout', 0.05)
-    baudrate = rospy.get_param('baudrate', 115200)
+    hz = rospy.get_param('~rate', 30)
+    port = rospy.get_param('~port', '/dev/ttyUSB0')
+    t_out = rospy.get_param('~timeout', 0.05)
+    baudrate = rospy.get_param('~baudrate', 115200)
 
     # init ROS stuff
     laser_pub = rospy.Publisher('range', Range, queue_size=10)
