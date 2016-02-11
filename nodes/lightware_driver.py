@@ -4,8 +4,8 @@ from sensor_msgs.msg import Range
 import serial
 
 
-def ros_lightware():
-    rospy.init_node('ros_lightware')
+def lightware_ros():
+    rospy.init_node('lightware_ros')
 
     # ROS parameters
     hz = rospy.get_param('~rate', 30)
@@ -49,6 +49,6 @@ def ros_lightware():
 
 if __name__ == '__main__':
     try:
-        ros_lightware()
+        lightware_ros()
     except rospy.ROSInterruptException:
         pass

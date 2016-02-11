@@ -1,5 +1,5 @@
 <launch>
-  <node name="lightware" pkg="ros_lightware" type="ros_lightware.py" respawn="false" output="screen">
+  <node name="lightware" pkg="lightware_ros" type="lightware_driver.py" respawn="false" output="screen">
     <param name="rate" type="double" value="30"/>
     <param name="port" type="string" value="/dev/ttyUSB0"/>
     <param name="baudrate" type="int" value="115200"/>
