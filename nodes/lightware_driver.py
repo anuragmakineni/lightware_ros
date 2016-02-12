@@ -8,43 +8,41 @@ def lightware_ros():
     rospy.init_node('lightware_ros')
 
     # ROS parameters
-    hz = rospy.get_param('~rate', 30)
+    hz = rospy.get_param('~rate', -1)
     port = rospy.get_param('~port', '/dev/ttyUSB0')
     t_out = rospy.get_param('~timeout', 0.05)
     baudrate = rospy.get_param('~baudrate', 115200)
 
     # init ROS stuff
     laser_pub = rospy.Publisher('range', Range, queue_size=10)
-    rate = rospy.Rate(hz)
 
-    try:
-        ser = serial.Serial(port, baudrate, timeout=t_out)
-    except serial.SerialException:
-        rospy.logerr('Unable to connect to LightWare at %s:%d', port, baudrate)
-        exit()
+    if hz > 0:
+        rate = rospy.Rate(hz)
 
-    while ser.isOpen():
-        payload = ser.readline()
+    with serial.Serial(port, baudrate, timeout=t_out) as ser:
+        while ser.isOpen() and not rospy.is_shutdown():
+            ser.reset_input_buffer()
+            payload = ser.readline()
 
-        range_string = payload[:8]  # get only the range portion of the string
-        range_string = range_string.strip()
+            range_string = payload.split("m")[0]
 
-        if range_string == '---.--':
-            distance = 0.0
-        else:
-            distance = float(range_string)
+            try:
+                distance = float(range_string)
+                # populate message
+                msg = Range()
+                msg.header.stamp = rospy.Time.now()
+                msg.radiation_type = 1
+                msg.field_of_view = 0.0035  # rad
+                msg.min_range = 0.0  # m
+                msg.max_range = 50.0  # m
+                msg.range = distance
 
-        # populate message
-        msg = Range()
-        msg.header.stamp = rospy.Time.now()
-        msg.radiation_type = 1
-        msg.field_of_view = 0.0035  # rad
-        msg.min_range = 0.0  # m
-        msg.max_range = 50.0  # m
-        msg.range = distance
+                laser_pub.publish(msg)
+            except ValueError:
+                rospy.logwarn('Serial Read Error: %s', payload)
 
-        laser_pub.publish(msg)
-        rate.sleep()
+            if hz > 0:
+                rate.sleep()
 
 
 if __name__ == '__main__':
